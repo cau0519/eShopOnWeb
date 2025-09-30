@@ -1,4 +1,4 @@
-﻿using System.Net.Mime;
+using System.Net.Mime;
 using Ardalis.ListStartupServices;
 using Azure.Identity;
 using BlazorAdmin;
@@ -81,7 +81,6 @@ builder.Services.AddMvc(options =>
 {
     options.Conventions.Add(new RouteTokenTransformerConvention(
              new SlugifyParameterTransformer()));
-
 });
 builder.Services.AddControllersWithViews();
 builder.Services.AddRazorPages(options =>
@@ -122,13 +121,14 @@ if (useAppConfig)
         options.Connect(new Uri(appConfigEndpoint), new DefaultAzureCredential())
         .ConfigureRefresh(refresh =>
         {
-            // Default cache expiration is 30 seconds
-            refresh.Register("eShopWeb:Settings:NoResultsMessage").SetCacheExpiration(TimeSpan.FromSeconds(10));
+            // Updated code: Replace SetCacheExpiration with SetRefreshInterval
+            refresh.Register("eShopWeb:Settings:NoResultsMessage")
+                   .SetRefreshInterval(TimeSpan.FromSeconds(10));  // Replaces SetCacheExpiration with SetRefreshInterval
         })
         .UseFeatureFlags(featureFlagOptions =>
         {
-            // Default cache expiration is 30 seconds
-            featureFlagOptions.CacheExpirationInterval = TimeSpan.FromSeconds(10);
+            // Updated code: Replace CacheExpirationInterval with SetRefreshInterval
+            featureFlagOptions.SetRefreshInterval(TimeSpan.FromSeconds(10));  // Replaces CacheExpirationInterval with SetRefreshInterval
         });
     });
 }
@@ -235,7 +235,6 @@ app.UseRouting();
 app.UseCookiePolicy();
 app.UseAuthentication();
 app.UseAuthorization();
-
 
 app.MapControllerRoute("default", "{controller:slugify=Home}/{action:slugify=Index}/{id?}");
 app.MapRazorPages();
